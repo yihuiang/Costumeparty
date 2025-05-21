@@ -40,7 +40,7 @@ app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "pug");
 
 //5. Define Routes:-------------------------------------------------
-app.get("/main", (req, res) => {
+app.get("/", (req, res) => {
     res.render("MainLanding");
 });
 
