@@ -1,29 +1,26 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const startButton = document.getElementById("start-button");
+  const resultContainer = document.getElementById('qr-reader-results');
+  let lastResult = null;
+  let countResults = 0;
 
-  startButton.addEventListener("click", async () => {
-    const readerDiv = document.getElementById("reader-frame");
+  function onScanSuccess(decodedText, decodedResult) {
+    if (decodedText !== lastResult) {
+      ++countResults;
+      lastResult = decodedText;
 
-    try {
-      const html5QrCode = new Html5Qrcode("reader-frame");
-      const config = { fps: 10, qrbox: 250 };
+      // Display or process the result
+      console.log(`Scan result ${decodedText}`, decodedResult);
+      resultContainer.innerText = `Scanned: ${decodedText}`;
 
-      await html5QrCode.start(
-        { facingMode: "environment" }, // Use back camera on mobile
-        config,
-        (decodedText, decodedResult) => {
-          console.log("QR Code scanned:", decodedText);
-          html5QrCode.stop(); // stop the camera after successful scan
-          window.location.href = `/scan?characterID=${encodeURIComponent(decodedText)}`;
-        },
-        error => {
-          // Optionally show scan errors
-          console.warn("QR scan error", error);
-        }
-      );
-    } catch (err) {
-      alert("Camera access failed: " + err.message);
-      console.error("Camera error:", err);
+      // Optional: redirect after scan
+      window.location.href = `/scan?characterID=${encodeURIComponent(decodedText)}`;
     }
-  });
+  }
+
+  const html5QrcodeScanner = new Html5QrcodeScanner(
+    "qr-reader",
+    { fps: 10, qrbox: 250 }
+  );
+
+  html5QrcodeScanner.render(onScanSuccess);
 });
