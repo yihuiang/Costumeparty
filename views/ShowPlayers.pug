@@ -1,0 +1,16 @@
+doctype html
+html
+  head
+    title All Players
+    link(rel="stylesheet", href="/css/showplayers.css")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+  body
+    .container
+      img.logo(src="/img/AllPlayersTitle.png", alt="All Players")
+      if players.length
+        each player in players
+          .player-card= player.username
+        form(action="/startgame", method="POST")
+          button.start-button(type="submit") Start Game
+      else
+        p.no-players No players waiting to join

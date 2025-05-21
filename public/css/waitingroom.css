@@ -1,0 +1,42 @@
+body, html {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #433b8e;
+  font-family: 'Arial', sans-serif;
+}
+
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.title {
+  max-width: 80%;
+  margin-bottom: 20px;
+}
+
+#reader-frame {
+  width: 300px;
+  max-width: 90%;
+  height: 300px;
+  border-radius: 20px;
+  background-color: #222;
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+#start-button {
+  padding: 12px 30px;
+  font-size: 16px;
+  border: none;
+  border-radius: 25px;
+  background-color: #6e61f6;
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}

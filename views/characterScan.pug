@@ -1,0 +1,13 @@
+doctype html
+html
+  head
+    title Character Info
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    style.
+      img { width: 200px; margin-top: 20px; }
+  body
+    if character
+      h1 You scanned: #{character.name}
+      img(src=character.imagePath, alt=character.name)
+    else
+      h2 Character not found

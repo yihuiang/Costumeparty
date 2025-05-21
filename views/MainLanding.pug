@@ -1,0 +1,16 @@
+doctype html
+html
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Costume Party Detective
+    link(rel="stylesheet", href="/css/globals.css")
+    link(rel="stylesheet", href="/css/mainlanding.css")
+  body
+    .main-landing
+      .join-card
+        h2 Join Game
+        img.qr-code(src="/img/JoinQR.png", alt="Scan to Join")
+      form(action="/showplayers", method="get")
+        button.start-button(type="submit") Start
+

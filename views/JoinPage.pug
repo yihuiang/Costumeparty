@@ -1,0 +1,12 @@
+doctype html
+html
+  head
+    title Join Game
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    link(rel="stylesheet", href="/css/join.css")
+  body
+    .container
+      img.logo(src="/img/Title.png", alt="Game Title")
+      form(action="/join", method="POST")
+        input(type="text", name="username", placeholder="enter username", required)
+        button(type="submit") Ready

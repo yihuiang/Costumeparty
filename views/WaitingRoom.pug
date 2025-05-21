@@ -1,0 +1,13 @@
+doctype html
+html
+  head
+    title Waiting Room
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    link(rel="stylesheet", href="/css/waitingroom.css")
+    script(src="https://unpkg.com/html5-qrcode") 
+    script(src="/js/waitingroom.js")
+  body
+    .container
+      img.title(src="/img/Pick&ScanTitle.png", alt="Pick and Scan")
+      #reader-frame
+      button#start-button Open Cam
