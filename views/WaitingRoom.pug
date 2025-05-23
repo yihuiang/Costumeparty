@@ -4,16 +4,15 @@ html
     title Waiting Room
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
     link(rel="stylesheet", href="/css/waitingroom.css")
-    script(src="https://unpkg.com/html5-qrcode")
-    script(src="/js/waitingroom.js") 
-    
+    script(src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js")
   body
     .container
-      img.title(src="/img/Pick&ScanTitle.png", alt="Pick and Scan")
+      img.title(src="/img/Pick&ScanTitle.png", alt="Pick & Scan")
 
-      #qr-reader(style="width:500px")
-      #qr-reader-results
-
-      
       button#start-button Open Cam
-      
+
+      .qr-border
+        #reader
+
+      p#qr-reader-results
+    script(src="/js/WaitingRoom.js")

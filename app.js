@@ -22,12 +22,14 @@ const db = require('./db');
 const joinRouter = require('./routes/JoinPage')(db);
 const showPlayersRoute = require('./routes/ShowPlayers');
 // const waitingRoomRoute = require('./routes/WaitingRoom');
-const characterScanRoute = require('./routes/characterScan')(db);
+const characterScanRoute = require('./routes/characterScan');
+
 
 app.use('/', joinRouter);
 app.use('/', showPlayersRoute);
 // app.use('/', waitingRoomRoute);
-app.use('/', characterScanRoute);
+app.use('/scan', characterScanRoute);
+
 
 //3. Set Up Middleware:
 app.use(bodyParser.json());
@@ -53,8 +55,15 @@ app.get("/showplayers", (req, res)=> {
 });
 
 app.get('/waitingroom', (req, res) => {
-    res.render("WaitingRoom"); // Or render a pug file
+    res.render("WaitingRoom"); 
 });
+
+app.get('/characterscan', (req, res)=>{
+    res.render("characterScan");
+});
+// app.get('/waitingroom2', (req, res) => {
+//   res.render('waitingroom2');
+// });
 
 
 //6. Start the Server:----------------------------------------------
