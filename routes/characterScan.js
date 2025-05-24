@@ -26,6 +26,7 @@ const qrCodeToCharacterID = {
 
 router.get("/", (req, res) => {
   const qrCode = req.query.characterID;
+   const username = req.session.username || "Player";
 
   if (!qrCode || !qrCodeToCharacterID[qrCode]) {
     return res.status(400).send("Invalid QR code.");
@@ -47,6 +48,7 @@ router.get("/", (req, res) => {
     const character = results[0];
 
     res.render("characterScan", {
+      username,
       name: character.name,
       image: character.image,
       description: character.description

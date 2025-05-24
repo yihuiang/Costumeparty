@@ -1,22 +1,24 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const startButton = document.getElementById("start-button");
+// routes/MainLanding.js
+const express = require('express');
+const router = express.Router();
+const db = require('../db');
+const moment = require('moment');
 
-  startButton.addEventListener("click", () => {
-    const html5QrCode = new Html5Qrcode("reader-frame");
-    const qrConfig = { fps: 10, qrbox: 250 };
+// Only backend routes here
+router.post('/create-session', (req, res) => {
+    const startTime = moment().format('YYYY-MM-DD HH:mm:ss');
+    const status = 'waiting';
 
-    html5QrCode.start(
-      { facingMode: "environment" },
-      qrConfig,
-      qrCodeMessage => {
-        console.log("QR Code detected:", qrCodeMessage);
-        window.location.href = `/scan?characterID=${encodeURIComponent(qrCodeMessage)}`;
-      },
-      error => {
-        // Optional: log read errors
-      }
-    ).catch(err => {
-      console.error("Camera start failed:", err);
+    const query = 'INSERT INTO gamesession (startTime, status) VALUES (?, ?)';
+    db.query(query, [startTime, status], (err, result) => {
+        if (err) {
+            console.error('Failed to create session:', err);
+            return res.status(500).json({ error: 'Failed to create session' });
+        }
+
+        const gameSessionID = result.insertId;
+        res.json({ gameSessionID });
     });
-  });
 });
+
+module.exports = router;

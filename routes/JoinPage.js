@@ -11,24 +11,50 @@ module.exports = (db) => {
     // Handle form submission
     router.post('/join', (req, res) => {
         const username = req.body.username;
+        const gameSessionID = req.query.gameSessionID; // passed from scan
 
-        if (!username) {
-            return res.status(400).send("Username is required");
+        if (!username || !gameSessionID) {
+            return res.status(400).send("Username and session required");
         }
 
-        // Insert player into player table
-        const insertPlayerQuery = 'INSERT INTO player (username) VALUES (?)';
+        const countQuery = `
+            SELECT COUNT(*) AS playerCount
+            FROM playersession
+            WHERE gameSessionID = ?
+        `;
 
-        db.query(insertPlayerQuery, [username], (err, result) => {
-            if (err) {
-                console.error("Failed to insert player:", err);
-                return res.status(500).send("Database error");
+        db.query(countQuery, [gameSessionID], (err, results) => {
+            if (err) return res.status(500).send("Database error");
+
+            const playerCount = results[0].playerCount;
+
+            if (playerCount >= 5) {
+                return res.send("This game session is full. Please try again.");
             }
 
-            // Redirect to show players page
-            res.redirect('/waitingroom');
+            const insertPlayer = 'INSERT INTO player (username) VALUES (?)';
+            db.query(insertPlayer, [username], (err, playerResult) => {
+                if (err) return res.status(500).send("Failed to add player");
+
+                const playerID = playerResult.insertId;
+                req.session.username = username;
+                req.session.gameSessionID = gameSessionID;
+
+                const characterID = req.query.characterID; // scanned before
+                const insertPlayerSession = `
+                    INSERT INTO playersession (playerID, gameSessionID, characterID)
+                    VALUES (?, ?, ?)
+                `;
+
+                db.query(insertPlayerSession, [playerID, gameSessionID, characterID], (err) => {
+                    if (err) return res.status(500).send("Failed to assign character");
+
+                    res.redirect('/waitingroom');
+                });
+            });
         });
     });
+
 
     return router;
 };

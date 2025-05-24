@@ -4,30 +4,27 @@ const path = require("path");
 
 const bodyParser = require('body-parser');
 
-
-
-// const session = require('express-session'); 
+const session = require('express-session'); 
 
 //2. Initialize the App: 
 const app = express();
 
-// app.use(session({ 
-//   secret: 'boardgame', 
-//   resave: true, 
-//   saveUninitialized: true 
-// })); 
+app.use(session({ 
+  secret: 'boardgame', 
+  resave: true, 
+  saveUninitialized: true 
+})); 
+
 app.use(express.urlencoded({ extended: true }));
 
 const db = require('./db');
 const joinRouter = require('./routes/JoinPage')(db);
 const showPlayersRoute = require('./routes/ShowPlayers');
-// const waitingRoomRoute = require('./routes/WaitingRoom');
 const characterScanRoute = require('./routes/characterScan');
 
 
 app.use('/', joinRouter);
 app.use('/', showPlayersRoute);
-// app.use('/', waitingRoomRoute);
 app.use('/scan', characterScanRoute);
 
 
@@ -61,9 +58,6 @@ app.get('/waitingroom', (req, res) => {
 app.get('/characterscan', (req, res)=>{
     res.render("characterScan");
 });
-// app.get('/waitingroom2', (req, res) => {
-//   res.render('waitingroom2');
-// });
 
 
 //6. Start the Server:----------------------------------------------

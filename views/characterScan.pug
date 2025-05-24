@@ -6,9 +6,55 @@ html
     link(rel="stylesheet", href="/css/characterScan.css")
   body
     .character-container
-      h3 #{username}
-      p Your character is
-      h1.character-name #{name}
-      .image-box
-        img.character-img(src=`/img/${image}`, alt=name)
-      p.description You must not let other players know your character
+      button#view-btn(style="display: none") View Character
+      h2.username #{username}
+
+      .character-info
+        p.character-text Your character is
+        h1.character-name #{name}
+        .image-box#image-box
+          img.character-img(src=`/img/${image}`, alt=name)
+        p.description Don't reveal your character to others!
+
+      button#hide-btn Tap to hide
+
+       // Waiting Overlay (Initially hidden)
+      .waiting-overlay#waiting
+        img.waiting-img(src="/img/Waiting.png", alt="Waiting")
+        
+
+      // Popup Modal
+      .modal#popup-modal
+        .modal-content
+          span.close-btn &times;
+          h2 #{name}
+          img(src=`/img/${image}`, alt=name, class="popup-img")
+
+    script.
+      const characterInfo = document.querySelector(".character-info");
+      const hideBtn = document.getElementById("hide-btn");
+      const viewBtn = document.getElementById("view-btn");
+      const modal = document.getElementById("popup-modal");
+      const closeBtn = document.querySelector(".close-btn");
+      const waiting = document.getElementById("waiting");
+
+      hideBtn.addEventListener("click", () => {
+        characterInfo.classList.add("hidden");
+        hideBtn.style.display = "none";
+        viewBtn.style.display = "inline-block";
+        waiting.style.display = "flex";
+      });
+
+      viewBtn.addEventListener("click", () => {
+        modal.style.display = "block";
+      });
+
+      closeBtn.addEventListener("click", () => {
+        modal.style.display = "none";
+      });
+
+      window.addEventListener("click", (event) => {
+        if (event.target === modal) {
+          modal.style.display = "none";
+        }
+      });
