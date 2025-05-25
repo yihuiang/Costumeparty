@@ -18,14 +18,19 @@ app.use(session({
 app.use(express.urlencoded({ extended: true }));
 
 const db = require('./db');
+const mainLandingRoute = require('./routes/MainLanding')(db);
 const joinRouter = require('./routes/JoinPage')(db);
-const showPlayersRoute = require('./routes/ShowPlayers');
+const showPlayersRoute = require('./routes/ShowPlayers')(db);
 const characterScanRoute = require('./routes/characterScan');
+const loadingRoute = require('./routes/Loading')(db);
+const gameStatusRoute = require('./routes/GameStatus')(db);
 
-
+app.use('/', mainLandingRoute);
 app.use('/', joinRouter);
 app.use('/', showPlayersRoute);
 app.use('/scan', characterScanRoute);
+app.use('/', loadingRoute);
+app.use('/', gameStatusRoute);
 
 
 //3. Set Up Middleware:
@@ -44,8 +49,10 @@ app.get("/main", (req, res) => {
 });
 
 app.get("/join", (req, res) => {
-    res.render("JoinPage");
+  const gameSessionID = req.query.gameSessionID || req.session.gameSessionID;
+  res.render("JoinPage", { gameSessionID });
 });
+
 
 app.get("/showplayers", (req, res)=> {
     res.render("ShowPlayers");
@@ -58,6 +65,14 @@ app.get('/waitingroom', (req, res) => {
 app.get('/characterscan', (req, res)=>{
     res.render("characterScan");
 });
+
+app.get('/leaderboard', (req, res) => {
+  res.render('Leaderboard'); // Adjust if your file is named differently
+});
+
+// app.get('/loading', (req, res) => {
+//   res.render("Loading");
+// });
 
 
 //6. Start the Server:----------------------------------------------

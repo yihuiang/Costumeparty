@@ -48,7 +48,7 @@ body, html {
 }
 
 /* START button */
-.start-button {
+#start-button {
   background-color: #7d75f9;
   color: white;
   font-weight: bold;
@@ -62,7 +62,7 @@ body, html {
 }
 
 
-.start-button:hover {
+#start-button:hover {
   background-color: #615dc5;
 }
 

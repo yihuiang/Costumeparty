@@ -1,0 +1,46 @@
+doctype html
+html
+  head
+    title You're In The Game
+    link(rel="stylesheet", href="/css/loading.css")
+    script.
+      let countdownImages = ["/img/3.png", "/img/2.png", "/img/1.png"];
+      let countdownIndex = 0;
+
+      function showCountdown() {
+        const countdownContainer = document.getElementById("countdown");
+        const message = document.getElementById("waiting-message");
+
+        if (countdownIndex < countdownImages.length) {
+          message.style.display = 'none';
+          countdownContainer.innerHTML = `<img src="${countdownImages[countdownIndex]}" class="countdown-img" />`;
+          countdownIndex++;
+          setTimeout(showCountdown, 1000);
+        } else {
+          window.location.href = '/waitingroom';
+        }
+      }
+
+      async function pollGameStatus() {
+        try {
+          const res = await fetch('/gamestatus');
+          const data = await res.json();
+          console.log("Status:", data.status);
+          if (data.status === 'started') {
+            showCountdown();
+          } else {
+            setTimeout(pollGameStatus, 1000);
+          }
+        } catch (err) {
+          console.error("Polling error:", err);
+          setTimeout(pollGameStatus, 1000);
+        }
+      }
+
+      window.onload = pollGameStatus;
+  body
+    .container
+      .username #{username}
+      img.center-image(src="/img/Inthegame.png", alt="You're in the game")
+      #waiting-message Waiting for host to start the game...
+      #countdown

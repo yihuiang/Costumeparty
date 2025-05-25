@@ -9,4 +9,5 @@ html
       img.logo(src="/img/Title.png", alt="Game Title")
       form(action="/join", method="POST")
         input(type="text", name="username", placeholder="enter username", required)
+        input(type="hidden", name="gameSessionID", value=gameSessionID)
         button(type="submit") Ready

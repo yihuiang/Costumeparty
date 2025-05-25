@@ -9,16 +9,19 @@ html
   body
     .main-landing
       .join-card
-        h2 Join Game
-        //- img.qr-code(src="/img/JoinQR.png", alt="Scan to Join")
-        img#qr-code
-      script.
-        const domain = window.location.hostname;
-        const port = window.location.port;
-        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://${domain}:${port}/join`;
-        document.getElementById("qr-code").src = qrUrl;
+        if gameSessionID
+          h3 Room: #{gameSessionID}
+          h2 Join Game
+          img#qr-code
+          script.
+            const domain = window.location.hostname;
+            const port = window.location.port;
+            const gameSessionID = !{JSON.stringify(gameSessionID)};
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://${domain}:${port}/join?gameSessionID=${gameSessionID}`;
+            document.getElementById("qr-code").src = qrUrl;
 
-      
-      form(action="/showplayers", method="get")
-        button.start-button(type="submit") Start
-
+          form(action="/start-game", method="POST")
+            button(type="submit" id="start-button") Start Game
+        else
+          form(action="/create-session", method="POST")
+            button(type="submit" id="create-room-button") Create Game Room

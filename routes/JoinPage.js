@@ -1,60 +1,50 @@
-// routes/JoinPage.js
 const express = require('express');
-const router = express.Router();
 
-module.exports = (db) => {
-    // Render Join Page
-    router.get('/join', (req, res) => {
-        res.render('JoinPage');
-    });
+module.exports = function (db) {
+  const router = express.Router();
 
-    // Handle form submission
-    router.post('/join', (req, res) => {
-        const username = req.body.username;
-        const gameSessionID = req.query.gameSessionID; // passed from scan
+  router.post('/join', (req, res) => {
+    const username = req.body.username;
+    const gameSessionID = req.body.gameSessionID || req.query.gameSessionID || req.session.gameSessionID;
 
-        if (!username || !gameSessionID) {
-            return res.status(400).send("Username and session required");
+    req.session.username = username;
+    req.session.gameSessionID = gameSessionID;
+
+    if (!gameSessionID) {
+      return res.status(400).send("No active game session");
+    }
+
+    
+    
+    // Step 1: Insert into Player table
+    const insertPlayerQuery = 'INSERT INTO player (username) VALUES (?)';
+    db.query(insertPlayerQuery, [username], (err, playerResult) => {
+      if (err) {
+        console.error('Error inserting player:', err);
+        return res.status(500).send('Error inserting player');
+      }
+
+      const playerID = playerResult.insertId;
+
+      // Step 2: Insert into PlayerSession
+      const insertPlayerSessionQuery = `
+        INSERT INTO playersession (playerID, gameSessionID)
+        VALUES (?, ?)
+      `;
+      db.query(insertPlayerSessionQuery, [playerID, gameSessionID], (err2, sessionResult) => {
+        if (err2) {
+          console.error('Error inserting player session:', err2);
+          return res.status(500).send('Error inserting player session');
         }
 
-        const countQuery = `
-            SELECT COUNT(*) AS playerCount
-            FROM playersession
-            WHERE gameSessionID = ?
-        `;
+        
+        // Optional: Store playerSessionID in session if needed
+        req.session.playerSessionID = sessionResult.insertId;
 
-        db.query(countQuery, [gameSessionID], (err, results) => {
-            if (err) return res.status(500).send("Database error");
-
-            const playerCount = results[0].playerCount;
-
-            if (playerCount >= 5) {
-                return res.send("This game session is full. Please try again.");
-            }
-
-            const insertPlayer = 'INSERT INTO player (username) VALUES (?)';
-            db.query(insertPlayer, [username], (err, playerResult) => {
-                if (err) return res.status(500).send("Failed to add player");
-
-                const playerID = playerResult.insertId;
-                req.session.username = username;
-                req.session.gameSessionID = gameSessionID;
-
-                const characterID = req.query.characterID; // scanned before
-                const insertPlayerSession = `
-                    INSERT INTO playersession (playerID, gameSessionID, characterID)
-                    VALUES (?, ?, ?)
-                `;
-
-                db.query(insertPlayerSession, [playerID, gameSessionID, characterID], (err) => {
-                    if (err) return res.status(500).send("Failed to assign character");
-
-                    res.redirect('/waitingroom');
-                });
-            });
-        });
+        res.redirect('/loading'); // or wherever you want to send the player
+      });
     });
+  });
 
-
-    return router;
+  return router;
 };
