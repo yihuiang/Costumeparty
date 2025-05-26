@@ -1,0 +1,92 @@
+body {
+  margin: 0;
+  padding: 0;
+  background: url('/img/Bgdots.jpg') no-repeat center center fixed;
+  background-size: cover;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.container {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.leaderboard-title {
+  max-width: 400px;
+  margin-bottom: 40px;
+}
+
+.leaderboard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.headers {
+  display: flex;
+  justify-content: space-between;
+  width: 400px;
+  margin-bottom: 8px;
+  padding: 0 20px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.player-header, .score-header {
+  font-size: 16px;
+}
+
+
+.player-header {
+  flex-grow: 1;
+  text-align: left;
+  padding-left: 40px;
+}
+
+.score-header {
+  width: 60px;
+  text-align: right;
+}
+
+.player-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 500px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 25px;
+  padding: 12px 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.rank {
+  width: 40px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+.username {
+  flex-grow: 1;
+  font-size: 18px;
+  font-weight: 600;
+  color: #000;
+  text-align: left;
+  padding-left: 50px;
+}
+
+.score {
+  width: 60px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #000;
+  text-align: right;
+  padding-right: 50px;
+}
+
+.container2{
+  text-align: center;
+  font-weight: bold;
+  color:#fff;
+}

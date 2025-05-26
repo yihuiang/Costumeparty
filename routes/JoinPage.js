@@ -25,6 +25,7 @@ module.exports = function (db) {
       }
 
       const playerID = playerResult.insertId;
+      req.session.playerID = playerID;
 
       // Step 2: Insert into PlayerSession
       const insertPlayerSessionQuery = `

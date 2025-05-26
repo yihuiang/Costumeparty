@@ -6,6 +6,8 @@ module.exports = function (db) {
   // GET /showplayers - show list of players in the session
   router.get('/showplayers', (req, res) => {
     const gameSessionID = req.session.gameSessionID;
+    console.log("ShowPlayers - session gameSessionID:", req.session.gameSessionID);
+
 
     if (!gameSessionID) {
       return res.status(400).send("Session not set");

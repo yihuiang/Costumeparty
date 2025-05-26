@@ -1,7 +1,26 @@
 doctype html
 html
-    head
-        title Leader Board
+  head
+    title Leaderboard
+    link(rel="stylesheet", href="/css/leaderboard.css")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+  body
+    .container
+      img.leaderboard-title(src="/img/Leaderboard.png", alt="Leaderboard")
 
-    body 
-        h2 Leader board
+      if players.length
+        .leaderboard
+          .headers
+            
+            .player-header Player
+            .score-header Score
+          each player, index in players
+            .player-card
+              .rank #{index + 1}
+              .username= player.username
+              .score= player.score
+      else
+        p No players found for this game session.
+
+    .container2 
+        p Choose your character and get ready to scan!

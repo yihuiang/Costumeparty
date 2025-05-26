@@ -24,6 +24,8 @@ const showPlayersRoute = require('./routes/ShowPlayers')(db);
 const characterScanRoute = require('./routes/characterScan');
 const loadingRoute = require('./routes/Loading')(db);
 const gameStatusRoute = require('./routes/GameStatus')(db);
+const leaderboardRoute = require('./routes/Leaderboard')(db);
+const scannedStatusRouter = require("./routes/scannedstatus");
 
 app.use('/', mainLandingRoute);
 app.use('/', joinRouter);
@@ -31,7 +33,8 @@ app.use('/', showPlayersRoute);
 app.use('/scan', characterScanRoute);
 app.use('/', loadingRoute);
 app.use('/', gameStatusRoute);
-
+app.use('/', leaderboardRoute);
+app.use("/scannedstatus", scannedStatusRouter);
 
 //3. Set Up Middleware:
 app.use(bodyParser.json());
@@ -54,21 +57,21 @@ app.get("/join", (req, res) => {
 });
 
 
-app.get("/showplayers", (req, res)=> {
-    res.render("ShowPlayers");
-});
+// app.get("/showplayers", (req, res)=> {
+//     res.render("ShowPlayers");
+// });
 
 app.get('/waitingroom', (req, res) => {
     res.render("WaitingRoom"); 
 });
 
-app.get('/characterscan', (req, res)=>{
-    res.render("characterScan");
-});
+// app.get('/characterscan', (req, res)=>{
+//     res.render("characterScan");
+// });
 
-app.get('/leaderboard', (req, res) => {
-  res.render('Leaderboard'); // Adjust if your file is named differently
-});
+// app.get('/leaderboard', (req, res) => {
+//   res.render('Leaderboard'); 
+// });
 
 // app.get('/loading', (req, res) => {
 //   res.render("Loading");
