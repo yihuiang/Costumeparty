@@ -7,26 +7,38 @@ router.get("/", (req, res) => {
   const gameSessionID = req.session.gameSessionID;
 
   if (!gameSessionID) {
-    return res.json({ success: false });
+    return res.json({ success: false, error: "No session found" });
   }
 
-  const query = `
-    SELECT COUNT(*) AS total,
-           SUM(CASE WHEN characterID IS NOT NULL THEN 1 ELSE 0 END) AS scanned
-    FROM playersession
-    WHERE gameSessionID = ?
+  // Get total number of players in the session
+  const totalPlayersQuery = `
+    SELECT COUNT(*) AS total FROM playersession WHERE gameSessionID = ?
   `;
-
-  db.query(query, [gameSessionID], (err, results) => {
+  db.query(totalPlayersQuery, [gameSessionID], (err, totalResult) => {
     if (err) {
-      console.error("Error checking scan status:", err);
+      console.error("Error getting total players:", err);
       return res.json({ success: false });
     }
 
-    const { total, scanned } = results[0];
-    const allScanned = total === scanned;
+    const totalPlayers = totalResult[0].total;
 
-    res.json({ success: true, allScanned });
+    // Get number of players with a non-null characterID
+    const scannedQuery = `
+      SELECT COUNT(*) AS scanned FROM playersession 
+      WHERE gameSessionID = ? AND characterID IS NOT NULL
+    `;
+    db.query(scannedQuery, [gameSessionID], (err, scannedResult) => {
+      if (err) {
+        console.error("Error getting scanned players:", err);
+        return res.json({ success: false });
+      }
+
+      const scannedPlayers = scannedResult[0].scanned;
+      const allScanned = scannedPlayers === totalPlayers;
+
+      console.log(`Scanned: ${scannedPlayers} / ${totalPlayers}`);
+      res.json({ success: true, allScanned });
+    });
   });
 });
 

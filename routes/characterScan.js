@@ -95,7 +95,7 @@ router.get("/", (req, res) => {
 
 
 
-router.get("/scannedstatus", (req, res) => {
+router.get("/", (req, res) => {
   const gameSessionID = req.session.gameSessionID;
 
   if (!gameSessionID) {

@@ -54,6 +54,7 @@ html
         waiting.style.display = "flex";
       });
 
+    script.
       window.addEventListener("click", (event) => {
         if (event.target === modal) {
           modal.style.display = "none";
@@ -77,5 +78,13 @@ html
       }
 
       setInterval(checkAllScanned, 2000); // Check every 2 seconds
+
+      setInterval(() => {
+        const waitingImg = document.querySelector(".waiting-img");
+        if (waitingImg && waitingImg.src.includes("Gamestarts.png")) {
+          window.location.href = "/dice";
+        }
+      }, 1000); // check every 1 second
+
 
 

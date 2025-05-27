@@ -17,6 +17,12 @@ app.use(session({
 
 app.use(express.urlencoded({ extended: true }));
 
+app.use(bodyParser.json());
+
+// Serve static files
+app.use(express.static(path.join(__dirname, "public")));
+
+//import
 const db = require('./db');
 const mainLandingRoute = require('./routes/MainLanding')(db);
 const joinRouter = require('./routes/JoinPage')(db);
@@ -26,7 +32,9 @@ const loadingRoute = require('./routes/Loading')(db);
 const gameStatusRoute = require('./routes/GameStatus')(db);
 const leaderboardRoute = require('./routes/Leaderboard')(db);
 const scannedStatusRouter = require("./routes/scannedstatus");
+const diceRoutes = require('./routes/Dice');
 
+//use routes
 app.use('/', mainLandingRoute);
 app.use('/', joinRouter);
 app.use('/', showPlayersRoute);
@@ -35,12 +43,14 @@ app.use('/', loadingRoute);
 app.use('/', gameStatusRoute);
 app.use('/', leaderboardRoute);
 app.use("/scannedstatus", scannedStatusRouter);
+app.use('/', diceRoutes);
 
 //3. Set Up Middleware:
-app.use(bodyParser.json());
 
 
-app.use(express.static(path.join(__dirname, "public")));
+
+
+
 
 //4. Set Up View Engine: 
 app.set("views", path.join(__dirname, "views")); 
@@ -76,6 +86,11 @@ app.get('/waitingroom', (req, res) => {
 // app.get('/loading', (req, res) => {
 //   res.render("Loading");
 // });
+
+app.get('/dice', (req, res) => {
+  const username = req.session.username || "Player";
+  res.render('dice', { username });
+});
 
 
 //6. Start the Server:----------------------------------------------
