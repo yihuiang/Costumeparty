@@ -1,7 +1,7 @@
 const express = require('express');
 
 module.exports = function (db) {
-  const router = express.Router(); // ✅ this was missing
+  const router = express.Router(); 
 
   router.get('/leaderboard', (req, res) => {
     const gameSessionID = req.session.gameSessionID || req.query.gameSessionID;

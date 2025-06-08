@@ -1,0 +1,20 @@
+// views/partials/header.pug
+.header-wrapper
+  button#view-btn View Character
+  h2.username #{username}
+
+  .modal#popup-modal(style="display: none;")
+    .modal-content
+      span.close-btn &times;
+      if character
+        h2= character.name
+        img.popup-img(src=`/img/${character.image}`, alt=character.name)
+        p.description= character.description
+      else
+        p Character not selected.
+
+  .info-panel
+    | Score: 
+    span#score #{score}
+    |     Count: 
+    span#count #{count}

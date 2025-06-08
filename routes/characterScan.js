@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const db = require("../db");
 
+
 const qrCodeToCharacterID = {
   "C01": 1, "C02": 2, "C03": 3, "C04": 4, "C05": 5,
   "C06": 6, "C07": 7, "C08": 8, "C09": 9, "C10": 10,

@@ -1,0 +1,18 @@
+doctype html
+html
+  head
+    title Question
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    link(rel="stylesheet", href="/css/question.css")
+  body
+    .container
+      h2 Question for #{username}
+      h3.question-text #{question.questionText}
+
+      form(method="POST", action="/submit-answer")
+        each answer in answers
+          .answer-option
+            input(type="radio", name="answerID", value=answer.answerID, required)
+            label #{answer.answerText}
+        input(type="hidden", name="questionID", value=question.questionID)
+        button.submit-btn(type="submit") Submit Answer

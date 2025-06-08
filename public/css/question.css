@@ -1,0 +1,37 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f4f4;
+  padding: 20px;
+}
+
+.container {
+  background: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  max-width: 600px;
+  margin: auto;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.question-text {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.answer-option {
+  margin: 10px 0;
+}
+
+label {
+  margin-left: 8px;
+}
+
+.submit-btn {
+  margin-top: 1rem;
+  padding: 10px 20px;
+  background-color: #0066cc;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}

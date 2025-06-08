@@ -33,6 +33,7 @@ const gameStatusRoute = require('./routes/GameStatus')(db);
 const leaderboardRoute = require('./routes/Leaderboard')(db);
 const scannedStatusRouter = require("./routes/scannedstatus");
 const diceRoutes = require('./routes/Dice');
+const questionRouter = require('./routes/question');
 
 //use routes
 app.use('/', mainLandingRoute);
@@ -44,6 +45,7 @@ app.use('/', gameStatusRoute);
 app.use('/', leaderboardRoute);
 app.use("/scannedstatus", scannedStatusRouter);
 app.use('/', diceRoutes);
+app.use('/', questionRouter);
 
 //3. Set Up Middleware:
 
@@ -92,6 +94,9 @@ app.get('/dice', (req, res) => {
   res.render('dice', { username });
 });
 
+app.get('/question', (req, res) => {
+    res.render("question"); 
+});
 
 //6. Start the Server:----------------------------------------------
 app.listen(3000, function () {
