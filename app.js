@@ -77,6 +77,10 @@ app.get('/waitingroom', (req, res) => {
     res.render("WaitingRoom"); 
 });
 
+app.get('/index', (req, res) => {
+  res.render('index');
+});
+
 // app.get('/characterscan', (req, res)=>{
 //     res.render("characterScan");
 // });

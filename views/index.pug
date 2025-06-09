@@ -1,0 +1,41 @@
+doctype html
+html
+  head
+    title NFC Test for CHAR_PRINCESS
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+  body
+    h1 NFC Tag Scan Test
+    button(onclick="scanNFC()") Tap to Scan NFC
+    p#result Status: Waiting for scan...
+
+    script.
+      async function scanNFC() {
+        const result = document.getElementById('result');
+        if ('NDEFReader' in window) {
+          try {
+            const ndef = new NDEFReader();
+            await ndef.scan();
+            result.textContent = 'Scanning... Please tap the NFC tag.';
+
+            ndef.onreading = event => {
+              const decoder = new TextDecoder();
+              let found = false;
+              for (const record of event.message.records) {
+                const text = decoder.decode(record.data);
+                result.textContent = `NFC Tag Read: ${text}`;
+                if (text === 'CHAR_PRINCESS') {
+                  alert('✅ CHAR_PRINCESS tag detected! You may eliminate this player.');
+                }
+                found = true;
+              }
+              if (!found) {
+                result.textContent = 'NFC tag has no readable records.';
+              }
+            };
+          } catch (error) {
+            result.textContent = `Error: ${error.message}`;
+          }
+        } else {
+          result.textContent = 'Web NFC is not supported on this browser.';
+        }
+      }
