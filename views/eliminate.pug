@@ -1,0 +1,18 @@
+doctype html
+html
+  head
+    title Eliminate
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    link(rel="stylesheet", href="/css/eliminate.css")
+    script(src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js")
+  body
+    .container
+      img.title(src="/img/eliminate.png", alt="Eliminate")
+
+      button#start-button Open Cam
+
+      .qr-border
+        #reader
+
+      p#qr-reader-results
+    script(src="/js/eliminate.js")

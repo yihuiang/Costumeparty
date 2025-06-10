@@ -3,7 +3,6 @@ const router = express.Router();
 const db = require('../db');
 
 // GET /question
-// GET /question
 router.get('/question', (req, res) => {
   const username = req.session.username || "Player";
   const { playerID, gameSessionID } = req.session;
@@ -23,7 +22,8 @@ router.get('/question', (req, res) => {
     const character = characterRows[0] || null;
 
     const playerSessionQuery = `
-      SELECT playerSessionID FROM playersession
+      SELECT playerSessionID, score
+      FROM playersession
       WHERE playerID = ? AND gameSessionID = ?
     `;
 
@@ -31,6 +31,7 @@ router.get('/question', (req, res) => {
       if (err2 || psRows.length === 0) return res.status(500).send("Player session not found");
 
       const playerSessionID = psRows[0].playerSessionID;
+      const score = psRows[0].score;
 
       // STEP 1: Find most recent move WITHOUT questionID
       const moveQuery = `
@@ -54,7 +55,7 @@ router.get('/question', (req, res) => {
 
           const question = questionRows[0];
 
-          // STEP 3: Immediately update playermove with this questionID
+          // STEP 3: Attach question to the move
           const updateMoveQuery = `
             UPDATE playermove
             SET questionID = ?
@@ -74,13 +75,13 @@ router.get('/question', (req, res) => {
             db.query(answerQuery, [question.questionID], (err6, answers) => {
               if (err6) return res.status(500).send("Failed to fetch answers");
 
-              // STEP 5: Render the page
               res.render('question', {
                 username,
                 character,
                 question,
                 answers,
-                rolledColor
+                rolledColor,
+                score
               });
             });
           });
@@ -89,7 +90,6 @@ router.get('/question', (req, res) => {
     });
   });
 });
-
 
 // POST /submit-answer
 router.post('/submit-answer', (req, res) => {
@@ -119,20 +119,107 @@ router.post('/submit-answer', (req, res) => {
 
       const isCorrect = answerRows[0].isCorrect;
 
-      // STEP: Update the move row where this player answered this question
       const updateMoveQuery = `
         UPDATE playermove
-        SET isCorrect = ?
+        SET isCorrect = ?, isCompleted = 1
         WHERE playerSessionID = ? AND questionID = ?
         ORDER BY timeStamp DESC
         LIMIT 1
       `;
 
       db.query(updateMoveQuery, [isCorrect, playerSessionID, questionID], (err3) => {
-        if (err3) return res.status(500).send("Failed to update isCorrect");
+        if (err3) return res.status(500).send("Failed to update move");
 
-        res.redirect('/dice'); // or next step
+        if (isCorrect) {
+          const updateScoreQuery = `
+            UPDATE playersession
+            SET score = score + 100
+            WHERE playerSessionID = ?
+          `;
+
+          db.query(updateScoreQuery, [playerSessionID], (err4) => {
+            if (err4) return res.status(500).send("Failed to update score");
+            renderResult();
+          });
+        } else {
+          renderResult();
+        }
+
+        function renderResult() {
+          const moveQuery = `
+            SELECT rolledColor
+            FROM playermove
+            WHERE playerSessionID = ? AND questionID = ?
+            ORDER BY timeStamp DESC
+            LIMIT 1
+          `;
+
+          db.query(moveQuery, [playerSessionID, questionID], (err5, moveRows) => {
+            if (err5 || moveRows.length === 0) return res.status(500).send("Could not find rolled color");
+
+            const rolledColor = moveRows[0].rolledColor;
+            const username = req.session.username || "Player";
+
+            const characterQuery = `
+              SELECT c.name, c.image, c.description, ps.score
+              FROM playersession ps
+              JOIN \`character\` c ON ps.characterID = c.characterID
+              WHERE ps.playerID = ? AND ps.gameSessionID = ?
+            `;
+
+            db.query(characterQuery, [playerID, gameSessionID], (err6, charRows) => {
+              if (err6 || charRows.length === 0) 
+                return res.status(500).send("Character or score fetch failed");
+
+              const character = {
+                name: charRows[0].name,
+                image: charRows[0].image,
+                description: charRows[0].description
+              };
+              const score = charRows[0].score;
+
+              res.render('question-result', {
+                isCorrect,
+                rolledColor,
+                username,
+                character,
+                score
+              });
+            });
+          });
+        }
       });
+    });
+  });
+});
+
+// POST /complete-move
+router.post('/complete-move', (req, res) => {
+  const { playerID, gameSessionID } = req.session;
+
+  if (!playerID || !gameSessionID) return res.status(400).send("Missing session");
+
+  const psQuery = `
+    SELECT playerSessionID FROM playersession
+    WHERE playerID = ? AND gameSessionID = ?
+  `;
+
+  db.query(psQuery, [playerID, gameSessionID], (err, psRows) => {
+    if (err || psRows.length === 0) return res.status(500).send("Player session not found");
+
+    const playerSessionID = psRows[0].playerSessionID;
+
+    const completeMoveQuery = `
+      UPDATE playermove
+      SET isCompleted = 1
+      WHERE playerSessionID = ?
+      ORDER BY timeStamp DESC
+      LIMIT 1
+    `;
+
+    db.query(completeMoveQuery, [playerSessionID], (err2) => {
+      if (err2) return res.status(500).send("Failed to mark move completed");
+      res.json({ success: true });
     });
   });
 });

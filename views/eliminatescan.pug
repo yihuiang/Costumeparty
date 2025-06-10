@@ -1,0 +1,27 @@
+doctype html
+html
+  head 
+    title Character Eliminated
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    style.
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding-top: 50px;
+      }
+      .character-img {
+        width: 200px;
+        height: auto;
+        border-radius: 10px;
+      }
+  body
+    .character-info
+      if wasEliminated
+        p.character-text You have successfully eliminated:
+      else
+        p.character-text This character is not owned. No one was eliminated.
+      h1.character-name #{name}
+      .image-box
+        img.character-img(src=`/img/${image}`, alt=name)
+    br
+    a(href="/dice") 

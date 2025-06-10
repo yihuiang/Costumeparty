@@ -49,7 +49,7 @@ router.get('/current-turn', (req, res) => {
     SELECT pm.playerSessionID
     FROM gameturn gt
     JOIN playermove pm ON gt.gameTurnID = pm.gameTurnID
-    WHERE gt.gameSessionID = ?
+    WHERE gt.gameSessionID = ? AND pm.isCompleted = 1
     ORDER BY pm.timeStamp DESC
     LIMIT 1
   `;
@@ -83,6 +83,7 @@ router.get('/current-turn', (req, res) => {
 });
 
 // GET /dice
+// Update GET /dice to use getOrCreateCurrentTurn
 router.get('/dice', (req, res) => {
   const username = req.session.username || "Player";
   const playerID = req.session.playerID;
@@ -110,71 +111,70 @@ router.get('/dice', (req, res) => {
 
       const playerSessionID = playerSessionRows[0].playerSessionID;
 
-      const allPlayersQuery = `
-        SELECT playerSessionID FROM playersession
-        WHERE gameSessionID = ?
-        ORDER BY playerSessionID
-      `;
+      getOrCreateCurrentTurn(gameSessionID, (err3, currentTurn) => {
+        if (err3) return res.status(500).send("Failed to get or create current turn");
 
-      db.query(allPlayersQuery, [gameSessionID], (err3, allPlayersRows) => {
-        if (err3) return res.status(500).send("All players query failed");
+        const gameTurnID = currentTurn.gameTurnID;
 
-        const allPlayerIDs = allPlayersRows.map(r => r.playerSessionID);
-
-        const lastMoveSql = `
-          SELECT gt.gameTurnID, pm.playerSessionID
-          FROM gameturn gt
-          JOIN playermove pm ON gt.gameTurnID = pm.gameTurnID
-          WHERE gt.gameSessionID = ?
-          ORDER BY pm.timeStamp DESC
-          LIMIT 1
+        const allPlayersQuery = `
+          SELECT playerSessionID FROM playersession
+          WHERE gameSessionID = ?
+          ORDER BY playerSessionID
         `;
 
-        db.query(lastMoveSql, [gameSessionID], (err4, lastMoves) => {
-          if (err4) return res.status(500).send("Last move query failed");
+        db.query(allPlayersQuery, [gameSessionID], (err4, allPlayersRows) => {
+          if (err4) return res.status(500).send("All players query failed");
 
-          let isPlayerTurn = false;
-          let gameTurnID;
+          const allPlayerIDs = allPlayersRows.map(r => r.playerSessionID);
 
-          if (lastMoves.length === 0) {
-            // No moves yet, create new turn
-            const now = moment().format('YYYY-MM-DD HH:mm:ss');
-            const insertTurnSql = `
-              INSERT INTO gameturn (gameSessionID, roundNumber, startTime)
-              VALUES (?, 1, ?)
-            `;
-            db.query(insertTurnSql, [gameSessionID, now], (err5, insertResult) => {
-              if (err5) return res.status(500).send("Insert turn failed");
+          const lastMoveSql = `
+            SELECT pm.playerSessionID
+            FROM playermove pm
+            WHERE pm.gameTurnID = ?
+            ORDER BY pm.timeStamp DESC
+            LIMIT 1
+          `;
 
-              gameTurnID = insertResult.insertId;
+          db.query(lastMoveSql, [gameTurnID], (err5, lastMoves) => {
+            if (err5) return res.status(500).send("Last move query failed");
+
+            let isPlayerTurn = false;
+
+            if (lastMoves.length === 0) {
               isPlayerTurn = allPlayerIDs[0] === playerSessionID;
+            } else {
+              const lastPlayerID = lastMoves[0].playerSessionID;
+              const currentIndex = allPlayerIDs.indexOf(lastPlayerID);
+              const nextIndex = (currentIndex + 1) % allPlayerIDs.length;
+              isPlayerTurn = allPlayerIDs[nextIndex] === playerSessionID;
+            }
+
+            const scoreSql = `
+              SELECT SUM(CASE WHEN isCorrect = 1 THEN 100 ELSE 0 END) AS score
+              FROM playermove
+              WHERE playerSessionID = ?
+            `;
+
+            db.query(scoreSql, [playerSessionID], (err6, scoreRows) => {
+              if (err6) return res.status(500).send("Score query failed");
+
+              const score = scoreRows[0].score || 0;
 
               res.render('dice', {
                 username,
                 character: characterRows[0] || null,
                 isPlayerTurn,
-                gameTurnID
+                gameTurnID,
+                score
               });
             });
-          } else {
-            gameTurnID = lastMoves[0].gameTurnID;
-            const lastPlayerID = lastMoves[0].playerSessionID;
-            const currentIndex = allPlayerIDs.indexOf(lastPlayerID);
-            const nextIndex = (currentIndex + 1) % allPlayerIDs.length;
-            isPlayerTurn = allPlayerIDs[nextIndex] === playerSessionID;
-
-            res.render('dice', {
-              username,
-              character: characterRows[0] || null,
-              isPlayerTurn,
-              gameTurnID
-            });
-          }
+          });
         });
       });
     });
   });
 });
+
 
 // POST /roll-dice
 router.post('/roll-dice', (req, res) => {
@@ -210,5 +210,49 @@ router.post('/roll-dice', (req, res) => {
     });
   });
 });
+
+// OPTIONAL: Add to a script block to refresh score every few seconds
+setInterval(async () => {
+  try {
+    const res = await fetch('/player-score');
+    const data = await res.json();
+    document.getElementById("score").textContent = data.score;
+  } catch (e) {
+    console.error("Failed to update score:", e);
+  }
+}, 5000);
+
+
+router.get('/player-score', (req, res) => {
+  const playerID = req.session.playerID;
+  const gameSessionID = req.session.gameSessionID;
+
+  if (!playerID || !gameSessionID) {
+    return res.json({ score: 0 });
+  }
+
+  const sql = `
+    SELECT ps.playerSessionID
+    FROM playersession ps
+    WHERE ps.playerID = ? AND ps.gameSessionID = ?
+  `;
+
+  db.query(sql, [playerID, gameSessionID], (err, rows) => {
+    if (err || rows.length === 0) return res.json({ score: 0 });
+
+    const playerSessionID = rows[0].playerSessionID;
+
+    const scoreSql = `
+      SELECT SUM(CASE WHEN isCorrect = 1 THEN 10 ELSE 0 END) AS score
+      FROM playermove
+      WHERE playerSessionID = ?
+    `;
+    db.query(scoreSql, [playerSessionID], (err2, scoreRows) => {
+      if (err2) return res.json({ score: 0 });
+      res.json({ score: scoreRows[0].score || 0 });
+    });
+  });
+});
+
 
 module.exports = router;

@@ -46,6 +46,18 @@ body {
   font-weight: bold;
   top:-10px;
 }
+#score {
+  min-width: 3ch;
+  display: inline-block;
+  text-align: left;
+  overflow: visible;
+  font-weight: bold;
+}
+
+.score-label, .count-label {
+  margin-right: 5px;
+}
+
 
 .dice-container {
   background-color: #2a211e;

@@ -34,6 +34,7 @@ const leaderboardRoute = require('./routes/Leaderboard')(db);
 const scannedStatusRouter = require("./routes/scannedstatus");
 const diceRoutes = require('./routes/Dice');
 const questionRouter = require('./routes/question');
+const eliminateScanRouter = require('./routes/eliminatescan');
 
 //use routes
 app.use('/', mainLandingRoute);
@@ -46,13 +47,7 @@ app.use('/', leaderboardRoute);
 app.use("/scannedstatus", scannedStatusRouter);
 app.use('/', diceRoutes);
 app.use('/', questionRouter);
-
-//3. Set Up Middleware:
-
-
-
-
-
+app.use('/eliminatescan', eliminateScanRouter);
 
 //4. Set Up View Engine: 
 app.set("views", path.join(__dirname, "views")); 
@@ -77,9 +72,11 @@ app.get('/waitingroom', (req, res) => {
     res.render("WaitingRoom"); 
 });
 
-app.get('/index', (req, res) => {
-  res.render('index');
+app.get('/eliminate', (req, res) => {
+  res.render("eliminate");
 });
+
+
 
 // app.get('/characterscan', (req, res)=>{
 //     res.render("characterScan");

@@ -130,11 +130,12 @@ label {
 }
 
 .submit-btn {
-  margin-top: 1rem;
+  margin-top: 1.2rem;
+  font-size: 1rem;
   padding: 10px 20px;
   background-color: #0066cc;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 20px;
   cursor: pointer;
 }

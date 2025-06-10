@@ -36,10 +36,11 @@ html
           p Character not selected.
 
     .info-panel
-      | Score: 
-      span#score 0
-      |    Count: 
+      .score-label Score: 
+      span#score= score
+      .count-label   Count: 
       span#count 0
+
 
     .dice-container
       if isPlayerTurn
@@ -116,7 +117,7 @@ html
             });
             const data = await response.json();
             if (data.success) {
-              alert("Roll saved! Next player's turn.");
+              //- alert("Roll saved! Next player's turn.");
               window.location.href = data.redirectUrl; // redirect to question page
             } else {
               alert("Failed to save roll.");
