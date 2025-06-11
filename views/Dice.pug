@@ -39,7 +39,7 @@ html
       .score-label Score: 
       span#score= score
       .count-label   Count: 
-      span#count 0
+      span#count= count
 
 
     .dice-container
@@ -166,3 +166,31 @@ html
           if (waitingBoxEl) waitingBoxEl.style.display = 'none';
         });
       }
+
+    script.
+      setInterval(() => {
+        fetch('/eliminatescan/check-eliminated')
+          .then(res => res.json())
+          .then(data => {
+            if (data.isEliminated) {
+              window.location.href = '/eliminated';
+            }
+          })
+          .catch(err => console.error("Elimination check failed:", err));
+      }, 3000);
+
+    script.
+      setInterval(() => {
+        fetch('/eliminatescan/check-winner')
+          .then(res => res.json())
+          .then(data => {
+            console.log('Winner check response:', data); // Optional: for debugging
+            if (data.isWinner) {
+              window.location.href = '/winner';
+            }
+          })
+          .catch(err => console.error("Winner check failed:", err));
+      }, 4000);
+
+
+

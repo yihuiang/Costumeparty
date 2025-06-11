@@ -1,0 +1,17 @@
+doctype html
+html
+  head
+    title Eliminated
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    link(rel="stylesheet", href="/css/eliminated.css")
+    script.
+      function exitGame() {
+        window.open('', '_self').close(); // Attempt to close the window
+      }
+  body
+    h1 Sorry #{username} 
+    h1 you've been eliminated!
+    if characterImage
+      img(src=`/img/${characterImage}`, alt=characterName, width="250")
+    p You are out of the game.
+    button.button(onclick="exitGame()") Exit 

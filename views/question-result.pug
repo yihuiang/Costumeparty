@@ -22,11 +22,12 @@ html
       | Score: 
       span#score= score
       |    Count: 
-      span#count #{count}
+      span#count= count
 
 
     .container
       if isCorrect
+        h2 + 100 pts
         h2 Correct Answer!
         if rolledColor === 'black'
           p Choose to #[strong eliminate one character] within your room or #[strong PASS]

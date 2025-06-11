@@ -35,6 +35,8 @@ const scannedStatusRouter = require("./routes/scannedstatus");
 const diceRoutes = require('./routes/Dice');
 const questionRouter = require('./routes/question');
 const eliminateScanRouter = require('./routes/eliminatescan');
+const eliminatedRouter = require('./routes/eliminated');
+const winnerRouter = require('./routes/winner');
 
 //use routes
 app.use('/', mainLandingRoute);
@@ -48,6 +50,8 @@ app.use("/scannedstatus", scannedStatusRouter);
 app.use('/', diceRoutes);
 app.use('/', questionRouter);
 app.use('/eliminatescan', eliminateScanRouter);
+app.use('/eliminated',eliminatedRouter);
+app.use('/winner',winnerRouter);
 
 //4. Set Up View Engine: 
 app.set("views", path.join(__dirname, "views")); 
@@ -63,11 +67,6 @@ app.get("/join", (req, res) => {
   res.render("JoinPage", { gameSessionID });
 });
 
-
-// app.get("/showplayers", (req, res)=> {
-//     res.render("ShowPlayers");
-// });
-
 app.get('/waitingroom', (req, res) => {
     res.render("WaitingRoom"); 
 });
@@ -75,20 +74,6 @@ app.get('/waitingroom', (req, res) => {
 app.get('/eliminate', (req, res) => {
   res.render("eliminate");
 });
-
-
-
-// app.get('/characterscan', (req, res)=>{
-//     res.render("characterScan");
-// });
-
-// app.get('/leaderboard', (req, res) => {
-//   res.render('Leaderboard'); 
-// });
-
-// app.get('/loading', (req, res) => {
-//   res.render("Loading");
-// });
 
 app.get('/dice', (req, res) => {
   const username = req.session.username || "Player";
@@ -98,6 +83,20 @@ app.get('/dice', (req, res) => {
 app.get('/question', (req, res) => {
     res.render("question"); 
 });
+
+app.get('/eliminated',(req,res)=>{
+  res.render('eliminated', {
+    username: req.session.username || 'Player'
+  });
+});
+
+app.get('/winner', (req, res) => {
+  res.render("winner",{
+    username: req.session.username || 'Player',
+  }); 
+});
+
+
 
 //6. Start the Server:----------------------------------------------
 app.listen(3000, function () {

@@ -13,12 +13,13 @@ module.exports = function (db) {
     }
 
     const query = `
-      SELECT p.username, ps.score
+      SELECT p.username, ps.score, ps.isAlive
       FROM playersession ps
       JOIN player p ON ps.playerID = p.playerID
       WHERE ps.gameSessionID = ?
       ORDER BY ps.score DESC
     `;
+
 
     db.query(query, [gameSessionID], (err, players) => {
       if (err) {

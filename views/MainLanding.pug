@@ -21,7 +21,7 @@ html
             document.getElementById("qr-code").src = qrUrl;
 
           form(action="/start-game", method="POST")
-            button(type="submit" id="start-button") Start Game
+            button(type="submit" id="start-button") Enter Game
         else
           form(action="/create-session", method="POST")
             button(type="submit" id="create-room-button") Create Game Room

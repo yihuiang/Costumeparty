@@ -5,7 +5,7 @@ const db = require('../db');
 // GET /question
 router.get('/question', (req, res) => {
   const username = req.session.username || "Player";
-  const { playerID, gameSessionID } = req.session;
+  const { playerID, gameSessionID} = req.session;
 
   if (!playerID || !gameSessionID) return res.status(400).send("Missing session");
 
@@ -22,16 +22,20 @@ router.get('/question', (req, res) => {
     const character = characterRows[0] || null;
 
     const playerSessionQuery = `
-      SELECT playerSessionID, score
-      FROM playersession
-      WHERE playerID = ? AND gameSessionID = ?
+      SELECT ps.playerSessionID, ps.score,
+        (SELECT COUNT(*) FROM elimination e WHERE e.eliminatorSessionID = ps.playerSessionID) AS count
+      FROM playersession ps
+      WHERE ps.playerID = ? AND ps.gameSessionID = ?
     `;
+
 
     db.query(playerSessionQuery, [playerID, gameSessionID], (err2, psRows) => {
       if (err2 || psRows.length === 0) return res.status(500).send("Player session not found");
 
       const playerSessionID = psRows[0].playerSessionID;
       const score = psRows[0].score;
+      const count = psRows[0].count || 0;
+
 
       // STEP 1: Find most recent move WITHOUT questionID
       const moveQuery = `
@@ -81,7 +85,8 @@ router.get('/question', (req, res) => {
                 question,
                 answers,
                 rolledColor,
-                score
+                score,
+                count
               });
             });
           });
@@ -161,11 +166,13 @@ router.post('/submit-answer', (req, res) => {
             const username = req.session.username || "Player";
 
             const characterQuery = `
-              SELECT c.name, c.image, c.description, ps.score
+              SELECT c.name, c.image, c.description, ps.score,
+                (SELECT COUNT(*) FROM elimination e WHERE e.eliminatorSessionID = ps.playerSessionID) AS count
               FROM playersession ps
               JOIN \`character\` c ON ps.characterID = c.characterID
               WHERE ps.playerID = ? AND ps.gameSessionID = ?
             `;
+
 
             db.query(characterQuery, [playerID, gameSessionID], (err6, charRows) => {
               if (err6 || charRows.length === 0) 
@@ -183,7 +190,8 @@ router.post('/submit-answer', (req, res) => {
                 rolledColor,
                 username,
                 character,
-                score
+                score,
+                count: charRows[0].count
               });
             });
           });

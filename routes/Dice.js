@@ -82,8 +82,6 @@ router.get('/current-turn', (req, res) => {
   });
 });
 
-// GET /dice
-// Update GET /dice to use getOrCreateCurrentTurn
 router.get('/dice', (req, res) => {
   const username = req.session.username || "Player";
   const playerID = req.session.playerID;
@@ -160,12 +158,24 @@ router.get('/dice', (req, res) => {
 
               const score = scoreRows[0].score || 0;
 
-              res.render('dice', {
-                username,
-                character: characterRows[0] || null,
-                isPlayerTurn,
-                gameTurnID,
-                score
+              const countSql = `
+                SELECT eliminationCount FROM playersession
+                WHERE playerSessionID = ?
+              `;
+
+              db.query(countSql, [playerSessionID], (err7, countRows) => {
+                if (err7) return res.status(500).send("Count query failed");
+
+                const count = countRows[0]?.eliminationCount || 0;
+
+                res.render('dice', {
+                  username,
+                  character: characterRows[0] || null,
+                  isPlayerTurn,
+                  gameTurnID,
+                  score,
+                  count
+                });
               });
             });
           });
@@ -174,6 +184,7 @@ router.get('/dice', (req, res) => {
     });
   });
 });
+
 
 
 // POST /roll-dice

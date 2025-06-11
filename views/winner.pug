@@ -1,0 +1,22 @@
+doctype html
+html
+  head
+    title You Are the Winner
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    link(rel="stylesheet", href="/css/winner.css")
+  body
+    img.title(src="/img/winner.png", alt="winner")
+    h1 Congrats! #{username}
+
+    .winner-box
+      img(src=`/img/${image}`, width="300", alt=name)
+      h2= name
+
+    .info-panel
+      p Score: 
+        span= score 
+      p Eliminations: 
+        span= count 
+
+    br
+    a.button(href="/") Exit
