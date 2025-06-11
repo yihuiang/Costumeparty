@@ -89,7 +89,8 @@ html
         diceImg.classList.add('rolling');
 
         setTimeout(async () => {
-          const roll = Math.floor(Math.random() * 5) + 1;
+          const weightedRolls = [1, 2, 2, 2, 3, 4, 5]; // Black (2) appears more often
+          const roll = weightedRolls[Math.floor(Math.random() * weightedRolls.length)];
           const colorMap = {
             1: { color: 'yellow', hex: '#FFD700' },
             2: { color: 'black', hex: '#1e1e1e' },

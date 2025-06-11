@@ -31,6 +31,7 @@ body {
 .qr-border {
   width: 320px;
   height: 320px;
+  aspect-ratio: 1;
   border: 12px solid #d2d2e6;
   border-radius: 30px;
   box-sizing: border-box;
@@ -44,6 +45,11 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+#reader video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
 }
 
 #qr-reader-results {

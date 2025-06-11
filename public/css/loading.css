@@ -65,4 +65,8 @@ body, html {
   .username {
     font-size: 1.4rem;
   }
+  
+  #waiting-message {
+    font-size: 2rem;
+  }
 }
