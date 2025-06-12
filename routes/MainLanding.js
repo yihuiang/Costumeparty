@@ -26,7 +26,7 @@ module.exports = function (db) {
       const gameSessionID = result.insertId;
       req.session.gameSessionID = gameSessionID;
 
-      res.render('MainLanding', { gameSessionID }); // 👈 Pass ID to template
+      res.render('MainLanding', { gameSessionID }); 
     });
   });
 
