@@ -18,7 +18,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
       html5QrCode.start(
         selectedCam.id,
-        { fps: 10, qrbox: {width:250, height: 350 }},
+        {
+          fps: 10,
+          qrbox: { width: 250, height: 350 },
+          disableFlip: false  // Allow white-on-black QR codes
+        },
         (decodedText) => {
           resultContainer.innerText = `Scanned: ${decodedText}`;
           html5QrCode.stop().then(() => {
